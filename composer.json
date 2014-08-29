@@ -1,0 +1,31 @@
+{
+    "name": "renegare/weblet-platform",
+    "description": "Silex Weblet Platform/API OAuth2 App",
+    "keywords": ["weblet", "silex", "platform", "api", "oauth2 server", "renegare"],
+    "license": "MIT",
+
+    "autoload": {"psr-4": {
+        "Renegare\\Weblet\\Platform\\": "."
+    }},
+
+    "minimum-stability": "dev",
+
+    "require": {
+        "renegare/weblet-base": "0.1.*@dev",
+        "symfony/security": "v2.5.0",
+        "renegare/http": "v0.1.1rc2",
+        "renegare/scoauth": "0.1.*@dev"
+    },
+
+    "require-dev": {
+        "phpunit/phpunit": "4.1.*",
+        "symfony/browser-kit": "v2.5.0",
+        "symfony/process": "2.5.3",
+        "symfony/css-selector": "2.5.3",
+        "mikey179/vfsStream": "1.3.0"
+    },
+
+    "scripts": {
+        "test": "phpunit"
+    }
+}
