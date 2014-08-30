@@ -14,7 +14,8 @@
         "renegare/weblet-base": "0.1.*@dev",
         "symfony/security": "v2.5.0",
         "renegare/http": "v0.1.1rc2",
-        "renegare/scoauth": "0.1.*@dev"
+        "renegare/soauth": "dev-master",
+        "renegare/skip-model": "dev-development"
     },
 
     "require-dev": {
