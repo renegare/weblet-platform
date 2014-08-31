@@ -22,4 +22,8 @@
             <directory suffix=".php">./vendor</directory>
         </blacklist>
     </filter>
+
+    <listeners>
+        <listener class="Renegare\Weblet\Platform\Test\LoggerTestListener" />
+    </listeners>
 </phpunit>

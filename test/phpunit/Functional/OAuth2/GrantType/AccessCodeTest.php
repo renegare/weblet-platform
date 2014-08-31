@@ -12,14 +12,20 @@ class AccessCodeTest extends WebletTestCase {
 
     public function configureApplication(Weblet $app) {
         parent::configureApplication($app);
+        $app->enableSecurity();
+
         $app['soauth.test'] = true;
         $app['soauth.client.provider.config'] = [
             '1' => [
                 'name' => 'Client Application',
-                'domain' => 'ngrok.com',
+                'domain' => 'e4mpl3.ngrok.com',
                 'active' => 'true',
-                'secret' => 'ch3ng4Th15!']]
-        ;
+                'secret' => 'ch3ng4Th15!']
+        ];
+
+        $app['soauth.user.provider.config'] = [
+            'test@example.com' => ['password' => $app['security.encoder.digest']->encodePassword('Password123', ''), 'roles' => ['ROLE_USER'], 'enabled' => true]
+        ];
 
         $renderMock = $this->getMock('Renegare\Soauth\RendererInterface');
         $renderMock->expects($this->any())->method('renderSignInForm')
@@ -39,16 +45,15 @@ EOF
                 return sprintf($tmpl, $username, $redirect_uri, $client_id);
             }));
         $app['soauth.renderer'] = $renderMock;
-        $app->enableSecurity();
+
+        $app->get('/test-endpoint', function() use ($app){
+            return $app['security']->getToken()->getUsername();
+        });
     }
 
     public function testFlow() {
         $app = $this->getApplication();
         $clientInfo = $app['soauth.client.provider.config'][1];
-
-        $app->get('/test-endpoint', function() use ($app){
-            return $app['security']->getToken()->getUsername();
-        });
 
         // ensure no access
         $client = $this->createClient();
@@ -58,7 +63,7 @@ EOF
         // start authenticatication
         $client = $this->createClient();
         $crawler = $client->request('GET', '/auth/', [
-            'redirect_uri' => 'http =>//ngrok.com/cb',
+            'redirect_uri' => 'http://e4mpl3.ngrok.com/cb',
             'client_id' => 1
         ]);
         $response = $client->getResponse();
@@ -67,29 +72,24 @@ EOF
             'username' => 'test@example.com',
             'password' => 'Password123'
         ]);
-        return;
         $client->submit($form);
         $response = $client->getResponse();
         $this->assertEquals(302, $response->getStatusCode());
         $redirectTargetUrl = $response->getTargetUrl();
-        $this->assertContains('http =>//localhost/cb?code=', $redirectTargetUrl);
+        $this->assertContains('http://e4mpl3.ngrok.com/cb?code=', $redirectTargetUrl);
         $authCode = explode('?code=', $redirectTargetUrl)[1];
 
         // exchange for access code
-        $client = $this->createClient(['HTTP_X_CLIENT_SECRET' => $clientInfo['secret']], $app);
+        $client = $this->createClient(['HTTP_X_CLIENT_SECRET' => $clientInfo['secret']]);
         $client->request('POST', '/auth/access/', [], [], [], json_encode(['code' => $authCode]));
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
         $credentials = json_decode($response->getContent(), true);
 
-        // ensure access is granted
-        $client = $this->createClient(['HTTP_X_ACCESS_CODE' => $credentials['access_code']], $app);
-        $client->request('GET', '/test-endpoint');
-        $response = $client->getResponse();
-        $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
-        $this->assertEquals('test@example.com', $response->getContent());
-
-        $client = $this->createAuthenticatedClient([], [], $app);
+        // ensure access_code allows access to resource
+        $client = $this->createAuthenticatedClient([
+            'access_code' => $credentials['access_code']
+        ]);
         $client->request('GET', '/test-endpoint');
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
