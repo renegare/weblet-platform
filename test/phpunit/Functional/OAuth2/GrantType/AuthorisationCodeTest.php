@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Renegare\Weblet\Platform\Test\WebletTestCase;
 use Renegare\Weblet\Base\Weblet;
 
-class AccessCodeTest extends WebletTestCase {
+class AuthorisationCodeTest extends WebletTestCase {
 
     public function configureApplication(Weblet $app) {
         parent::configureApplication($app);
