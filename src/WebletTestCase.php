@@ -19,11 +19,6 @@ class WebletTestCase extends BaseWebletTestCase {
         return $app;
     }
 
-    public function configureApplication(BaseWeblet $app) {
-        $app['debug'] = true;
-        $app['exception_handler']->disable();
-    }
-
     public function createAuthenticatedClient(array $credentialAttrs = [], $createdTime = null, array $server = [], WebApplication $app = null) {
         $app = $app? $app : $this->getApplication();
 
