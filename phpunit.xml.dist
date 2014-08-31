@@ -24,6 +24,6 @@
     </filter>
 
     <listeners>
-        <listener class="Renegare\Weblet\Platform\Test\LoggerTestListener" />
+        <listener class="Renegare\Weblet\Base\PHPUnitPsrLogListener" />
     </listeners>
 </phpunit>
