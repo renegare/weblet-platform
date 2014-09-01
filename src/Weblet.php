@@ -11,6 +11,9 @@ class Weblet extends BaseWeblet {
 
     public function enableSecurity() {
         $this['security.firewalls'] = [
+            'healthcheck' => [
+                'pattern' => sprintf('^/%s', trim($this->getHealthCheckUri(), '/')),
+                'stateless' => true],
             'auth' => [
                 'pattern' => '^/auth',
                 'stateless' => true],
