@@ -19,7 +19,7 @@ class WebletTestCase extends BaseWebletTestCase {
         return $app;
     }
 
-    public function createAuthenticatedClient(array $credentialAttrs = [], $createdTime = null, array $server = [], WebApplication $app = null) {
+    public function createAuthenticatedClient(array $credentialAttrs = [], $createdTime = null, array $server = [], Weblet $app = null) {
         $app = $app? $app : $this->getApplication();
 
         $credentials = $this->createCredentials($credentialAttrs);
