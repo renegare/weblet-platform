@@ -4,10 +4,10 @@ namespace Renegare\Weblet\Platform;
 
 use Renegare\Weblet\Base\WebletTestCase as BaseWebletTestCase;
 use Renegare\Weblet\Base\Weblet as BaseWeblet;
-use Renegare\Soauth\Credentials;
+use Renegare\Soauth\CredentialsInterface;
 use Renegare\Soauth\SoauthTestCaseTrait;
 
-class WebletTestCase extends BaseWebletTestCase {
+abstract class WebletTestCase extends BaseWebletTestCase {
     use SoauthTestCaseTrait;
 
     /**
@@ -23,10 +23,13 @@ class WebletTestCase extends BaseWebletTestCase {
         $app = $app? $app : $this->getApplication();
 
         $credentials = $this->createCredentials($credentialAttrs);
+        $this->createUser($credentials, $credentialAttrs, $app);
         $this->saveCredentials($credentials, $createdTime, $app);
 
         $server = array_merge(['HTTP_X_ACCESS_CODE' => $credentials->getAccessCode()], $server);
         $client = $this->createClient($server, $app);
         return $client;
     }
+
+    abstract public function createUser(CredentialsInterface $credentials, $attrs, Weblet $app);
 }
