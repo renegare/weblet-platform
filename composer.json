@@ -13,7 +13,7 @@
     "require": {
         "renegare/weblet-base": "0.1.*@dev",
         "symfony/security": "v2.5.0",
-        "renegare/soauth": "dev-master"
+        "renegare/soauth": "dev-compliant"
     },
 
     "require-dev": {

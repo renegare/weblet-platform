@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Renegare\Weblet\Platform\Test\WebletTestCase;
 use Renegare\Weblet\Base\Weblet;
 
-class AuthorisationCodeTest extends WebletTestCase {
+class AuthorizationCodeTest extends WebletTestCase {
 
     public function configureApplication(Weblet $app) {
         parent::configureApplication($app);
@@ -62,7 +62,8 @@ EOF
 
         // start authenticatication
         $client = $this->createClient();
-        $crawler = $client->request('GET', '/auth/', [
+        $crawler = $client->request('GET', '/oauth/auth', [
+            'response_type' => 'code',
             'redirect_uri' => 'http://e4mpl3.ngrok.com/cb',
             'client_id' => 1
         ]);
@@ -80,15 +81,21 @@ EOF
         $authCode = explode('?code=', $redirectTargetUrl)[1];
 
         // exchange for access code
-        $client = $this->createClient(['HTTP_X_CLIENT_SECRET' => $clientInfo['secret']]);
-        $client->request('POST', '/auth/access/', [], [], [], json_encode(['code' => $authCode]));
+        $client = $this->createClient();
+        $client->request('POST', '/oauth/token', [
+            'grant_type' => 'authorization_code',
+            'code' => $authCode,
+            'client_id' => 1,
+            'client_secret' => $clientInfo['secret']
+        ]);
+
         $response = $client->getResponse();
         $this->assertEquals(Response::HTTP_OK, $response->getStatusCode());
-        $credentials = json_decode($response->getContent(), true);
+        $access = json_decode($response->getContent(), true);
 
         // ensure access_code allows access to resource
-        $client = $this->createAuthenticatedClient([
-            'access_code' => $credentials['access_code']
+        $client = $this->createAuthorizedClient([
+            'access_token' => $access['access_token']
         ]);
         $client->request('GET', '/test-endpoint');
         $response = $client->getResponse();

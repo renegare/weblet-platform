@@ -13,10 +13,12 @@ class Weblet extends BaseWeblet {
         $this->addFirewall('healthcheck', [
                 'pattern' => sprintf('^/%s', trim($this->getHealthCheckUri(), '/')),
                 'stateless' => true]);
-        $this->addFirewall('auth', [
-                'pattern' => '^/auth',
+
+        $this->addFirewall('oauth', [
+                'pattern' => '^/oauth',
                 'stateless' => true]);
-        $this->addFirewall('oauth2', [
+
+        $this->addFirewall('soauth', [
                 'pattern' => '^/',
                 'soauth' => true]);
 
@@ -24,7 +26,7 @@ class Weblet extends BaseWeblet {
         $this->doRegister(new SecurityServiceProvider, ['security.firewalls']);
         $oauthProvider = new OAuthControllerServiceProvider;
         $this->doRegister($oauthProvider, ['soauth.client.provider.config', 'soauth.test']);
-        $this->mount('/auth', $oauthProvider);
+        $this->mount('/oauth', $oauthProvider);
     }
 
     public function addFirewall($name, $config) {
